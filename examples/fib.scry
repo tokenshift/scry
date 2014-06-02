@@ -1,0 +1,10 @@
+let fib = func () {
+	let a = 1;
+	let b = 1;
+	for {
+		yield b;
+		a, b = b, a+b;
+	}
+};
+
+export at(i) = fib | skip i | first;
