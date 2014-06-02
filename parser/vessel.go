@@ -7,16 +7,16 @@ type Vessel interface {
 	io.Reader
 
 	// Discards a number of bytes from the start of the buffer.
-	Consume(int) Vessel
-	
+	Consume(int)
+
 	// Resets the reader position to the start of the buffer, as though the
 	// input after that point had not been read.
-	Reset() Vessel
+	Reset()
 }
 
 // Wraps a string as a vessel.
 func StringVessel(input string) Vessel {
-	return sVessel {
+	return &sVessel {
 		input,
 		0,
 	}
@@ -27,11 +27,9 @@ type sVessel struct {
 	offset int
 }
 
-func (v sVessel) Consume(i int) Vessel {
-	return sVessel {
-		v.input[i:],
-		0,
-	}
+func (v *sVessel) Consume(i int) {
+	v.input = v.input[i:]
+	v.offset = 0
 }
 
 func min(a, b int) int {
@@ -53,9 +51,6 @@ func (v sVessel) Read(buf []byte) (int, error) {
 	}
 }
 
-func (v sVessel) Reset() Vessel {
-	return sVessel {
-		v.input,
-		0,
-	}
+func (v sVessel) Reset() {
+	v.offset = 0
 }

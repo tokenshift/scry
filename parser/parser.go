@@ -27,7 +27,7 @@ func Lit(s string) Parser {
 	}
 }
 
-// Attempts to match each parser in order. The first success will be returned.
+// Attempts to match any parser in order. The first success will be returned.
 func Or(ps ...Parser) Parser {
 	return func(v Vessel) (Result, error) {
 		for _, p := range(ps) {
@@ -39,5 +39,21 @@ func Or(ps ...Parser) Parser {
 		}
 
 		return nil, fmt.Errorf("No match found.")
+	}
+}
+
+// Attempts to match all parsers in order. A slice containing all of the
+// results will be returned.
+func Seq(ps ...Parser) Parser {
+	return func(v Vessel) (Result, error) {
+		res := make([]interface{}, len(ps))
+		for i, p := range(ps) {
+			r, err := p(v)
+			if err != nil {
+				return nil, err
+			}
+			res[i] = r
+		}
+		return res, nil
 	}
 }
